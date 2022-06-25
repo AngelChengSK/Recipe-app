@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Discover recipes</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="app-title">Discover Recipes</div>
+      <form class="search-bar-container">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search with ingredient"
+          data-search-input
+        />
+        <button class="search-btn" data-search-btn>
+          <img src="images/search-icon.png" alt="search-icon" />
+        </button>
+      </form>
+    </header>
+    <main class="main">
+      <div class="landing-page show">
+        <div class="categories-section">
+          <div class="categories-section-title">Categories</div>
+          <div class="categories-container">
+            <div class="category">
+              <img
+                class="category-icon"
+                src="images/breakfast.png"
+                alt="breakfast"
+              />
+              <div class="category-name">Breakfast</div>
+            </div>
+            <div class="category">
+              <img
+                class="category-icon"
+                src="images/breakfast.png"
+                alt="starter"
+              />
+              <div class="category-name">Starter</div>
+            </div>
+            <div class="category">
+              <img
+                class="category-icon"
+                src="images/breakfast.png"
+                alt="beef"
+              />
+              <div class="category-name">Beef</div>
+            </div>
+            <div class="category">
+              <img
+                class="category-icon"
+                src="images/breakfast.png"
+                alt="chicken"
+              />
+              <div class="category-name">Chicken</div>
+            </div>
+            <div class="category">
+              <img
+                class="category-icon"
+                src="images/breakfast.png"
+                alt="pork"
+              />
+              <div class="category-name">Pork</div>
+            </div>
+            <div class="category">
+              <img
+                class="category-icon"
+                src="images/breakfast.png"
+                alt="seafood"
+              />
+              <div class="category-name">Seafood</div>
+            </div>
+            <div class="category">
+              <img
+                class="category-icon"
+                src="images/breakfast.png"
+                alt="dessert"
+              />
+              <div class="category-name">Dessert</div>
+            </div>
+            <div class="category">
+              <img
+                class="category-icon"
+                src="images/breakfast.png"
+                alt="Vegetarian"
+              />
+              <div class="category-name">Vegetarian</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="suggestion-section">
+          <div class="suggested-recipe-title">Suggested Recipes for you</div>
+          <div class="suggested-reason">
+            Because you searched for <span>Dessert</span>
+          </div>
+          <div class="suggested-recipes-container">
+            <div class="suggested-recipe-container">
+              <img
+                class="meal-img"
+                src="https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg"
+                alt=""
+              />
+              <div class="meal-name">Pancakes</div>
+              <div class="meal-instructions">
+                instructions instructions really long instructions
+              </div>
+              <div class="divider"></div>
+              <div class="meal-tags">
+                <div class="meal-tag">tag1</div>
+                <div class="meal-tag">tag2</div>
+              </div>
+            </div>
+            <div class="suggested-recipe-container">
+              <img
+                class="meal-img"
+                src="https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg"
+                alt=""
+              />
+              <div class="meal-name">Pancakes</div>
+              <div class="meal-instructions">
+                instructions instructions really long instructions
+              </div>
+              <div class="divider"></div>
+              <div class="meal-tags">
+                <div class="meal-tag">tag1</div>
+                <div class="meal-tag">tag2</div>
+              </div>
+            </div>
+            <div class="suggested-recipe-container">
+              <img
+                class="meal-img"
+                src="https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg"
+                alt=""
+              />
+              <div class="meal-name">Pancakes</div>
+              <div class="meal-instructions">
+                instructions instructions really long instructions
+              </div>
+              <div class="divider"></div>
+              <div class="meal-tags">
+                <div class="meal-tag">tag1</div>
+                <div class="meal-tag">tag2</div>
+              </div>
+            </div>
+            <div class="suggested-recipe-container">
+              <img
+                class="meal-img"
+                src="https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg"
+                alt=""
+              />
+              <div class="meal-name">Pancakes</div>
+              <div class="meal-instructions">
+                instructions instructions really long instructions
+              </div>
+              <div class="divider"></div>
+              <div class="meal-tags">
+                <div class="meal-tag">tag1</div>
+                <div class="meal-tag">tag2</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="search-results-container" data-search-results-container>
+        <div class="search-result recipe-container">
+          <img
+            class="meal-img"
+            src="https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg"
+            alt=""
+          />
+          <div class="meal-name">Pancakes</div>
+          <div class="meal-instructions">
+            instructions instructions really long instructions
+          </div>
+          <div class="divider"></div>
+          <div class="meal-tags">
+            <div class="meal-tag">tag1</div>
+            <div class="meal-tag">tag2</div>
+          </div>
+        </div>
+      </div>
+      <div class="recipe-container" data-recipe-container>
+        <div class="recipe-instructions"></div>
+        <div class="receipe-ingridents-container">
+          <div class="receipt-ingredients-name"></div>
+          <div class="receipt-ingredients-amount"></div>
+        </div>
+      </div>
+    </main>
+  </body>
+  <script src="scripts.js"></script>
+</html>
