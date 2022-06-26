@@ -18,19 +18,36 @@
           type="text"
           class="search-input"
           placeholder="Search with ingredient"
-          data-search-input
+          data-header-search-input
         />
         <button class="search-btn" data-search-btn>
           <img src="images/search-icon.png" alt="search-icon" />
         </button>
       </form>
+      <button class="subscribe">social media icon</button>
     </header>
+    <div class="homepage-img-section show" data-homepage-image-section>
+      <div class="home-page-img-content">
+        <h1 class="slogan">Eat healthily, Live healthily</h1>
+        <form class="homepage search-bar-container">
+          <input
+            type="text"
+            class="homepage search-input"
+            placeholder="Search with ingredient"
+            data-homepage-search-input
+          />
+          <button class="homepage search-btn" data-search-btn>
+            <img src="images/search-icon.png" alt="search-icon" />
+          </button>
+        </form>
+      </div>
+    </div>
     <main class="main">
-      <div class="landing-page show">
+      <div class="landing-page show" data-landing-page-section>
         <div class="categories-section">
           <div class="categories-section-title">Categories</div>
           <div class="categories-container">
-            <div class="category">
+            <div class="category-block">
               <img
                 class="category-icon"
                 src="images/breakfast.png"
@@ -38,7 +55,7 @@
               />
               <div class="category-name">Breakfast</div>
             </div>
-            <div class="category">
+            <div class="category-block">
               <img
                 class="category-icon"
                 src="images/breakfast.png"
@@ -46,7 +63,7 @@
               />
               <div class="category-name">Starter</div>
             </div>
-            <div class="category">
+            <div class="category-block">
               <img
                 class="category-icon"
                 src="images/breakfast.png"
@@ -54,7 +71,7 @@
               />
               <div class="category-name">Beef</div>
             </div>
-            <div class="category">
+            <div class="category-block">
               <img
                 class="category-icon"
                 src="images/breakfast.png"
@@ -62,7 +79,7 @@
               />
               <div class="category-name">Chicken</div>
             </div>
-            <div class="category">
+            <div class="category-block">
               <img
                 class="category-icon"
                 src="images/breakfast.png"
@@ -70,7 +87,7 @@
               />
               <div class="category-name">Pork</div>
             </div>
-            <div class="category">
+            <div class="category-block">
               <img
                 class="category-icon"
                 src="images/breakfast.png"
@@ -78,7 +95,7 @@
               />
               <div class="category-name">Seafood</div>
             </div>
-            <div class="category">
+            <div class="category-block">
               <img
                 class="category-icon"
                 src="images/breakfast.png"
@@ -86,7 +103,7 @@
               />
               <div class="category-name">Dessert</div>
             </div>
-            <div class="category">
+            <div class="category-block">
               <img
                 class="category-icon"
                 src="images/breakfast.png"
@@ -102,97 +119,70 @@
           <div class="suggested-reason">
             Because you searched for <span>Dessert</span>
           </div>
-          <div class="suggested-recipes-container">
-            <div class="suggested-recipe-container">
-              <img
-                class="meal-img"
-                src="https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg"
-                alt=""
-              />
-              <div class="meal-name">Pancakes</div>
-              <div class="meal-instructions">
-                instructions instructions really long instructions
-              </div>
-              <div class="divider"></div>
-              <div class="meal-tags">
-                <div class="meal-tag">tag1</div>
-                <div class="meal-tag">tag2</div>
-              </div>
-            </div>
-            <div class="suggested-recipe-container">
-              <img
-                class="meal-img"
-                src="https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg"
-                alt=""
-              />
-              <div class="meal-name">Pancakes</div>
-              <div class="meal-instructions">
-                instructions instructions really long instructions
-              </div>
-              <div class="divider"></div>
-              <div class="meal-tags">
-                <div class="meal-tag">tag1</div>
-                <div class="meal-tag">tag2</div>
-              </div>
-            </div>
-            <div class="suggested-recipe-container">
-              <img
-                class="meal-img"
-                src="https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg"
-                alt=""
-              />
-              <div class="meal-name">Pancakes</div>
-              <div class="meal-instructions">
-                instructions instructions really long instructions
-              </div>
-              <div class="divider"></div>
-              <div class="meal-tags">
-                <div class="meal-tag">tag1</div>
-                <div class="meal-tag">tag2</div>
-              </div>
-            </div>
-            <div class="suggested-recipe-container">
-              <img
-                class="meal-img"
-                src="https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg"
-                alt=""
-              />
-              <div class="meal-name">Pancakes</div>
-              <div class="meal-instructions">
-                instructions instructions really long instructions
-              </div>
-              <div class="divider"></div>
-              <div class="meal-tags">
-                <div class="meal-tag">tag1</div>
-                <div class="meal-tag">tag2</div>
-              </div>
+          <div
+            class="suggested-recipes-container"
+            data-suggested-recipes-container
+          ></div>
+        </div>
+      </div>
+      <div class="results-section" data-search-results-section>
+        <div class="results-header">
+          <div class="results-title">Search Results</div>
+          <div class="num-of-results">12 recipes found</div>
+        </div>
+        <div class="results-body" data-search-results-container>
+          <div class="result-container" data-id="${meal.idMeal}">
+            <img
+              class="recipe-img"
+              src="https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg"
+              alt=""
+            />
+            <div class="recipe-content-container">
+              <div class="recipe-name">${meal.strMeal}</div>
+              <div class="recipe-tags">${meal.strTags}</div>
             </div>
           </div>
         </div>
       </div>
-      <div class="search-results-container" data-search-results-container>
-        <div class="search-result recipe-container">
+      <div class="full-recipe-section" data-full-recipe-container>
+        <div class="full-recipe-content-container">
+          <div class="recipe-title">title</div>
+          <div class="recipe-category">category</div>
+          <div class="recipe-area">area</div>
           <img
-            class="meal-img"
             src="https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg"
+            class="full-recipe-image"
             alt=""
           />
-          <div class="meal-name">Pancakes</div>
-          <div class="meal-instructions">
-            instructions instructions really long instructions
-          </div>
-          <div class="divider"></div>
-          <div class="meal-tags">
-            <div class="meal-tag">tag1</div>
-            <div class="meal-tag">tag2</div>
+          <div class="instructions-header">Instructions</div>
+          <div class="full-recipe-instructions">
+            detail instructions really really really long one
           </div>
         </div>
-      </div>
-      <div class="recipe-container" data-recipe-container>
-        <div class="recipe-instructions"></div>
         <div class="receipe-ingridents-container">
-          <div class="receipt-ingredients-name"></div>
-          <div class="receipt-ingredients-amount"></div>
+          <div class="ingredient-header">Ingredients</div>
+          <div class="serve-amount-container">
+            <span class="serve-amount">Serves</span>
+            <button class="serve-btn minus">-</button>
+            <span> 1 </span>
+            <button class="serve-btn add">+</button>
+          </div>
+          <div class="receipt-ingrident-row">
+            <div class="ingredient-and-checkbox">
+              <input id="ingredient" type="checkbox" />
+              <div class="custom-checkbox"></div>
+              <label for="ingredient" class="receipt-ingrident-name">egg</label>
+            </div>
+            <div class="receipt-ingrident-amount">2 tbsp</div>
+          </div>
+          <div class="receipt-ingrident-row">
+            <div class="ingredient-and-checkbox">
+              <input id="ingredient" type="checkbox" />
+              <div class="custom-checkbox"></div>
+              <label for="ingredient" class="receipt-ingrident-name">egg</label>
+            </div>
+            <div class="receipt-ingrident-amount">2 tbsp</div>
+          </div>
         </div>
       </div>
     </main>
