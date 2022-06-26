@@ -1,3 +1,4 @@
+const appTitle = document.querySelector('[data-app-title]');
 const homepageImageSection = document.querySelector(
   '[data-homepage-image-section]'
 );
@@ -15,84 +16,134 @@ const searchResultsSection = document.querySelector(
 const searchResultContainer = document.querySelector(
   '[data-search-results-container]'
 );
+const recipesFound = document.querySelector('[data-recipes-found')
 const fullRecipeSection = document.querySelector(
   '[data-full-recipe-container]'
 );
 
-const previousSearch = 'egg';
+let previousSearch = 'egg';
 const currentPage = 'homepage';
+let numRecipesFound = 0;
 
-window.addEventListener('DOMContentLoaded', getSuggestion);
+window.addEventListener('DOMContentLoaded', () => {
+  renderSuggestion();
+});
+
+appTitle.addEventListener('click', () => {
+  toggleSection(homepageImageSection, landingPageSection);
+  // toggleSection(h)
+});
 
 searchBtn.addEventListener('click', (e) => {
   toggleSection(searchResultsSection);
-  getRecipeList(e);
+  renderRecipeList(e);
 });
 
 searchResultContainer.addEventListener('click', (e) => {
   if (e.target.parentElement.hasAttribute('data-id')) {
     toggleSection(fullRecipeSection);
-    getFullRecipe(e);
+    renderFullRecipe(e);
   }
 });
 
-function toggleSection(sectionToShow) {
-  if (sectionToShow.classList.contains('show')) return;
-
+function toggleSection(...sectionToShow) {
   const sections = [
     homepageImageSection,
     landingPageSection,
     searchResultsSection,
     fullRecipeSection
   ];
-  sectionToShow.classList.add('show');
 
-  sections.forEach((section) => {
-    if (section !== sectionToShow) section.classList.remove('show');
+  sectionToShow.forEach((section) => {
+    if (!section.classList.contains('show')) {
+      section.classList.add('show');
+    }
+  });
+
+  const sectionToHide = sections.filter(
+    (section) => !sectionToShow.includes(section)
+  );
+
+  sectionToHide.forEach((section) => {
+    section.classList.remove('show');
   });
 }
 
-function getRecipeList(e) {
+function renderRecipeList(e) {
   e.preventDefault();
   const searchPhase = searchInputHeader.value.trim();
+  searchResultContainer.innerHTML = '';
+  let html = '';
+  numRecipesFound = 0;
 
-  fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${searchPhase}`)
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
+  getListByIngredient(searchPhase).then((data) => {
+    if (data.meals) {
+      numRecipesFound += data.meals.length
 
-      let html = '';
-      if (data.meals) {
-        data.meals.forEach((meal) => {
+      data.meals.forEach((meal) => {
+        const id = meal.idMeal;
+
+        getFullDetails(id).then((fullRecipe) => {
           html += `
-          <div class="result-container" data-id="${meal.idMeal}">
+          <div class="result-container" data-id="${fullRecipe.meals[0].idMeal}">
               <img
                 class="recipe-img"
-                src="${meal.strMealThumb}"
+                src="${fullRecipe.meals[0].strMealThumb}"
                 alt=""
               />
               <div class="recipe-content-container">
                 <div class="recipe-name">
-                  ${meal.strMeal}
+                  ${fullRecipe.meals[0].strMeal}
                 </div>
                
-                <div class="recipe-tags">${meal.strTags}</div>
+                <div class="recipe-tags">${fullRecipe.meals[0].strTags}</div>
               </div>
             </div>
-        `;
+          `;
+          searchResultContainer.innerHTML = html;
         });
-      } else {
-        html = 'Sorry';
-      }
-      searchResultContainer.innerHTML = html;
-    });
+      });
+    }
+  });
+
+  getListByName(searchPhase).then((data) => {
+    if (data.meals) {
+      numRecipesFound += data.meals.length
+
+      data.meals.forEach((recipe) => {
+        html += `
+        <div class="result-container" data-id="${recipe.idMeal}">
+                <img
+                  class="recipe-img"
+                  src="${recipe.strMealThumb}"
+                  alt=""
+                />
+                <div class="recipe-content-container">
+                  <div class="recipe-name">
+                    ${recipe.strMeal}
+                  </div>
+                 
+                  <div class="recipe-tags">${recipe.strTags}</div>
+                </div>
+              </div>
+        `;
+      });
+      searchResultContainer.innerHTML = searchResultContainer.innerHTML + html;
+      previousSearch = searchPhase
+    }  else if (searchResultContainer.innerHTML === '') {
+      searchResultContainer.innerHTML = 'Sorry';
+    }
+  });
+
+  recipesFound.innerText = `${numRecipesFound} recipe(s) found`;
 }
 
-function getFullRecipe(e) {
+function renderFullRecipe(e) {
   e.preventDefault();
   const id = e.target.parentElement.dataset.id;
-  fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`)
-    .then((response) => response.json())
+  getFullDetails(id)
+    // fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`)
+    // .then((response) => response.json())
     .then((data) => {
       let ingredientsHtml = '';
       for (i = 1; i <= 20; i++) {
@@ -102,9 +153,9 @@ function getFullRecipe(e) {
           ingredientsHtml += `
             <div class="receipt-ingrident-row">
             <div class="ingredient-and-checkbox">
-              <input id="ingredient" type="checkbox">
+              <input id="${data.meals[0].idMeal}${i}" type="checkbox">
               <div class="custom-checkbox"></div>
-              <label for="ingredient" class="receipt-ingrident-name">${data.meals[0][ingredientKey]}</label>
+              <label for="${data.meals[0].idMeal}${i}" class="receipt-ingrident-name">${data.meals[0][ingredientKey]}</label>
               </div>
             <div class="receipt-ingrident-amount">${data.meals[0][measureKey]}</div>
             </div>
@@ -115,8 +166,8 @@ function getFullRecipe(e) {
       let html = `
           <div class="full-recipe-content-container">
             <div class="recipe-title">${data.meals[0].strMeal}</div>
-            <div class="recipe-category">${data.meals[0].strCategory}</div>
-            <div class="recipe-area">${data.meals[0].strArea}</div>
+            <div class="full-recipe category">${data.meals[0].strCategory}</div>
+            <div class="full-recipe area">${data.meals[0].strArea}</div>
             <img
               src="${data.meals[0].strMealThumb}"
               class="full-recipe-image"
@@ -127,12 +178,6 @@ function getFullRecipe(e) {
           </div>
           <div class="receipe-ingridents-container">
             <div class="ingredient-header">Ingredients</div>
-            <div class="serve-amount-container">
-              <span class="serve-amount">Serves</span>
-              <button class="serve-btn minus">-</button>
-              <span> 1 </span>
-              <button class="serve-btn add">+</button>
-            </div>
             <div class=receipt-ingridents-details-container>${ingredientsHtml}<div>
           </div>
           `;
@@ -141,9 +186,24 @@ function getFullRecipe(e) {
     });
 }
 
-async function getList() {
+// {/* <div class="serve-amount-container">
+// <span class="serve-amount">Serves</span>
+// <button class="serve-btn minus">-</button>
+// <span> 1 </span>
+// <button class="serve-btn add">+</button>
+// </div> */}
+
+async function getListByIngredient(ingredient) {
   const request = await fetch(
-    `https://www.themealdb.com/api/json/v1/1/filter.php?i=${previousSearch}`
+    `https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient}`
+  );
+  const data = await request.json();
+  return data;
+}
+
+async function getListByName(name) {
+  const request = await fetch(
+    `https://www.themealdb.com/api/json/v1/1/search.php?s=${name}`
   );
   const data = await request.json();
   return data;
@@ -157,8 +217,8 @@ async function getFullDetails(id) {
   return data;
 }
 
-function getSuggestion() {
-  getList().then((data) => {
+function renderSuggestion() {
+  getListByIngredient(previousSearch).then((data) => {
     if (data.meals) {
       const newList = data.meals.splice(0, 4);
       newList.forEach((meal) => {
@@ -176,13 +236,13 @@ function getSuggestion() {
                 <div class="recipe-instructions">${fullRecipe.meals[0].strInstructions}</div>
                 <div class="divider"></div>
                 <div class="recipe-tags">
-                  <div class="recipe-category">#${fullRecipe.meals[0].strCategory}</div>
-                  <div class="recipe-area">#${fullRecipe.meals[0].strArea}</div>
+                  <div class="suggest-recipe category">#${fullRecipe.meals[0].strCategory}</div>
+                  <div class="suggest-recipe area">#${fullRecipe.meals[0].strArea}</div>
                 </div>
               </div>
               `;
 
-          newHtml = suggestionContainer.innerHTML + html;
+          const newHtml = suggestionContainer.innerHTML + html;
           suggestionContainer.innerHTML = newHtml;
         });
       });

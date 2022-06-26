@@ -12,7 +12,7 @@
   </head>
   <body>
     <header class="header">
-      <div class="app-title">Discover Recipes</div>
+      <div class="app-title" data-app-title>Discover Recipes</div>
       <form class="search-bar-container">
         <input
           type="text"
@@ -128,10 +128,10 @@
       <div class="results-section" data-search-results-section>
         <div class="results-header">
           <div class="results-title">Search Results</div>
-          <div class="num-of-results">12 recipes found</div>
+          <div class="num-of-results" data-recipes-found>12 recipes found</div>
         </div>
         <div class="results-body" data-search-results-container>
-          <div class="result-container" data-id="${meal.idMeal}">
+          <!-- <div class="result-container" data-id="${meal.idMeal}">
             <img
               class="recipe-img"
               src="https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg"
@@ -141,7 +141,7 @@
               <div class="recipe-name">${meal.strMeal}</div>
               <div class="recipe-tags">${meal.strTags}</div>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="full-recipe-section" data-full-recipe-container>
