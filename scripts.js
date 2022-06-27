@@ -157,20 +157,31 @@ async function renderSearchResult(input) {
   let htmlArray = await getAllRecipes(filteredList).then((recipes) => {
     return recipes.map((recipe) => {
       return `
-        <div class="result-container" data-id="${recipe.idMeal}">
-          <img
-            class="recipe-img"
-            src="${recipe.strMealThumb}"
-            alt=""
-          />
-          <div class="recipe-content-container">
-            <div class="recipe-name">
-              ${recipe.strMeal}
-            </div>
-           
-            <div class="recipe-tags">${recipe.strTags}</div>
+      <div class="preview result-container" data-id="${recipe.idMeal}">
+        <div class="recipe-owner-details-container">
+          <img class="preview owner-img" src="images/user-profile.png">
+          <div class="owner-details-text">
+            <div class="preview owner-name">Profile Name</div>
+            <div class="preview share-time">2h ago</div>
           </div>
         </div>
+        <img
+          class="preview recipe-img"
+          src="${recipe.strMealThumb}"
+          alt="${recipe.strMeal}"
+        />
+        <div class="preview recipe-text-section">
+          <div class="preview recipe-name">${recipe.strMeal}</div>
+          <div class="preview recipe-instructions">${recipe.strInstructions}</div>
+          <div class="preview recipe-bottom">
+            <div class="preveiw recipe-tags">
+              <div class="preview recipe-category">#${recipe.strCategory}</div>
+              <div class="preview recipe-area">#${recipe.strArea}</div>
+            </div>
+            <button class="view-recipe-btn">VIEW RECIPE</button>
+          </div>
+        </div>
+      </div>
       `;
     });
   });
@@ -200,26 +211,36 @@ function renderFullRecipe(e) {
             </div>
           <div class="receipt-ingrident-amount">${data[measureKey]}</div>
           </div>
-        `; 
+        `;
       }
     }
 
     let finalHtml = `
-      <div class="full-recipe-content-container">
-        <div class="recipe-title">${data.strMeal}</div>
-        <div class="full-recipe category">${data.strCategory}</div>
-        <div class="full-recipe area">${data.strArea}</div>
+      <div class="full-recipe-image-container">
         <img
-          src="${data.strMealThumb}"
-          class="full-recipe-image"
-          alt=""
+        src="${data.strMealThumb}"
+        class="full-recipe-image"
+        alt=""
         />
-        <div class="instructions-header">Instructions</div>
-        <div class="full-recipe-instructions">${data.strInstructions}</div>
+        <div class="full-recipe-header">
+          <div class="full-recipe-title">${data.strMeal}</div>
+          <div class="full-recipe-tags">
+            <div class="full-recipe category">${data.strCategory}</div>
+            <div class="full-recipe area">${data.strArea}</div>
+          </div>
+        </div>
       </div>
-      <div class="receipe-ingridents-container">
-        <div class="ingredient-header">Ingredients</div>
-        <div class=receipt-ingridents-details-container>${ingredientsHtml}<div>
+      <div class="full-recipe-text-container">
+        <div class="full-recipe-body">
+          <div class="receipe-ingridents-section">
+            <div class="ingredient-header">Ingredients</div>
+            <div class=receipt-ingridents-details-container>${ingredientsHtml}</div>
+          </div>
+          <div class="full-recipe-instructions-section">
+            <div class="instructions-header">Instructions</div>
+            <div class="full-recipe-instructions">${data.strInstructions}</div>
+          </div>
+        </div>
       </div>
       `;
     
@@ -246,12 +267,12 @@ async function renderSuggestion() {
           src="${recipe.strMealThumb}"
           alt=""
         />
-        <div class="recipe-name">${recipe.strMeal}</div>
-        <div class="recipe-instructions">${recipe.strInstructions}</div>
+        <div class="suggestion recipe-name">${recipe.strMeal}</div>
+        <div class="suggestion recipe-instructions">${recipe.strInstructions}</div>
         <div class="divider"></div>
-        <div class="recipe-tags">
-          <div class="suggest-recipe category">#${recipe.strCategory}</div>
-          <div class="suggest-recipe area">#${recipe.strArea}</div>
+        <div class="suggestion recipe-tags">
+          <div class="suggestion recipe-category">#${recipe.strCategory}</div>
+          <div class="suggestion recipe-area">#${recipe.strArea}</div>
         </div>
       </div>
       `;
