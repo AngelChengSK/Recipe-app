@@ -16,14 +16,13 @@ const searchResultsSection = document.querySelector(
 const searchResultContainer = document.querySelector(
   '[data-search-results-container]'
 );
-const recipesFound = document.querySelector('[data-recipes-found')
+const recipesFound = document.querySelector('[data-recipes-found');
 const fullRecipeSection = document.querySelector(
   '[data-full-recipe-container]'
 );
 
 let previousSearch = 'egg';
 const currentPage = 'homepage';
-let numRecipesFound = 0;
 
 window.addEventListener('DOMContentLoaded', () => {
   renderSuggestion();
@@ -31,12 +30,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
 appTitle.addEventListener('click', () => {
   toggleSection(homepageImageSection, landingPageSection);
-  // toggleSection(h)
 });
 
 searchBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  if (searchInputHeader.value === null || searchInputHeader.value === '')
+    return;
   toggleSection(searchResultsSection);
-  renderRecipeList(e);
+  renderSearchResult(searchInputHeader.value);
 });
 
 searchResultContainer.addEventListener('click', (e) => {
@@ -69,112 +70,178 @@ function toggleSection(...sectionToShow) {
   });
 }
 
-function renderRecipeList(e) {
-  e.preventDefault();
-  const searchPhase = searchInputHeader.value.trim();
-  searchResultContainer.innerHTML = '';
-  let html = '';
-  numRecipesFound = 0;
+async function getListByIngredient(ingredient) {
+  //need to use await, so that the request variable will wait after the promise is resolved, and be assigned with the response, instead of the promise
+  const response = await fetch(
+    `https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient}`
+  );
 
-  getListByIngredient(searchPhase).then((data) => {
-    if (data.meals) {
-      numRecipesFound += data.meals.length
+  //.json() is an async method (it returns a Promise itself)
+  //need to use await, so that the data variable will wait after the promise is resolved, and be assigned with the result, instead of the promise
+  const data = await response.json();
 
-      data.meals.forEach((meal) => {
-        const id = meal.idMeal;
+  if (!data.meals) return;
 
-        getFullDetails(id).then((fullRecipe) => {
-          html += `
-          <div class="result-container" data-id="${fullRecipe.meals[0].idMeal}">
-              <img
-                class="recipe-img"
-                src="${fullRecipe.meals[0].strMealThumb}"
-                alt=""
-              />
-              <div class="recipe-content-container">
-                <div class="recipe-name">
-                  ${fullRecipe.meals[0].strMeal}
-                </div>
-               
-                <div class="recipe-tags">${fullRecipe.meals[0].strTags}</div>
-              </div>
+  const listOfId = data.meals.map((meal) => {
+    return meal.idMeal;
+  });
+
+  return listOfId;
+
+  // the following code will do the same thing,
+  // .then() will only be executed after the promise is resolved
+  // so no need to use await
+  // =====================================================
+  // return fetch(
+  //   `https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient}`
+  // )
+  //   .then((response) => response.json())
+  //   .then((data) => {
+  //     return data.meals.map((meal) => {
+  //       return meal.idMeal;
+  //     });
+  //   });
+  //=======================================================
+}
+
+async function getListByName(name) {
+  const request = await fetch(
+    `https://www.themealdb.com/api/json/v1/1/search.php?s=${name}`
+  );
+  const data = await request.json();
+  if (!data.meals) return;
+  const listOfId = data.meals.map((meal) => {
+    return meal.idMeal;
+  });
+  return listOfId;
+}
+
+async function getListByCategory(category) {
+  const request = await fetch(
+    `https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`
+  );
+  const data = await request.json();
+  if (!data.meals) return;
+  const listOfId = data.meals.map((meal) => {
+    return meal.idMeal;
+  });
+  return listOfId;
+}
+
+async function getListByArea(area) {
+  const request = await fetch(
+    `https://www.themealdb.com/api/json/v1/1/filter.php?a=${area}`
+  );
+  const data = await request.json();
+  if (!data.meals) return;
+  const listOfId = data.meals.map((meal) => {
+    return meal.idMeal;
+  });
+  return listOfId;
+}
+
+//will return the promise
+function getSingleRecipe(id) {
+  return fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`)
+    .then((Response) => Response.json())
+    .then((data) => {
+      return data.meals[0];
+    });
+}
+
+function getAllRecipes(list) {
+  const requests = list.map((id) => {
+    return getSingleRecipe(id);
+  });
+  return Promise.all(requests);
+}
+
+async function getFilteredListOfId(input) {
+  const listOne = (await getListByIngredient(input)) || [];
+  const listTwo = (await getListByName(input)) || [];
+  const listThree = (await getListByCategory(input) || [])
+  const listFour = (await getListByArea(input) || [])
+
+  if (listOne.length === 0 && listTwo.length === 0 && listThree.length === 0 && listFour.length === 0) return;
+  const CombinedList = listOne.concat(listTwo).concat(listThree).concat(listFour);
+  //will return the id which the indexOf(id) equal to its current index
+  //so for duplicate id, its indexOf(id) will return position of the first occurance of id
+  const filteredList = CombinedList.filter((id, index) => {
+    return CombinedList.indexOf(id) == index;
+  });
+  return filteredList;
+}
+
+async function renderSearchResult(input) {
+  const filteredList = await getFilteredListOfId(input)
+  if (!filteredList) {
+    searchResultContainer.innerHTML = '<div>Sorry</div>';
+    recipesFound.innerText = `No recipe found`;
+    return;
+  }
+
+  let htmlArray = await getAllRecipes(filteredList).then((recipes) => {
+    return recipes.map((recipe) => {
+      return `
+      <div class="result-container" data-id="${recipe.idMeal}">
+          <img
+            class="recipe-img"
+            src="${recipe.strMealThumb}"
+            alt=""
+          />
+          <div class="recipe-content-container">
+            <div class="recipe-name">
+              ${recipe.strMeal}
             </div>
-          `;
-          searchResultContainer.innerHTML = html;
-        });
-      });
-    }
+           
+            <div class="recipe-tags">${recipe.strTags}</div>
+          </div>
+        </div>
+      `;
+    });
   });
-
-  getListByName(searchPhase).then((data) => {
-    if (data.meals) {
-      numRecipesFound += data.meals.length
-
-      data.meals.forEach((recipe) => {
-        html += `
-        <div class="result-container" data-id="${recipe.idMeal}">
-                <img
-                  class="recipe-img"
-                  src="${recipe.strMealThumb}"
-                  alt=""
-                />
-                <div class="recipe-content-container">
-                  <div class="recipe-name">
-                    ${recipe.strMeal}
-                  </div>
-                 
-                  <div class="recipe-tags">${recipe.strTags}</div>
-                </div>
-              </div>
-        `;
-      });
-      searchResultContainer.innerHTML = searchResultContainer.innerHTML + html;
-      previousSearch = searchPhase
-    }  else if (searchResultContainer.innerHTML === '') {
-      searchResultContainer.innerHTML = 'Sorry';
-    }
-  });
-
-  recipesFound.innerText = `${numRecipesFound} recipe(s) found`;
+  const html = htmlArray.join('');
+  searchResultContainer.innerHTML = html;
+  recipesFound.innerText = `${filteredList.length} recipe(s) found`;
+  previousSearch = input;
 }
 
 function renderFullRecipe(e) {
-  e.preventDefault();
+  // e.preventDefault();
   const id = e.target.parentElement.dataset.id;
-  getFullDetails(id)
-    // fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`)
-    // .then((response) => response.json())
-    .then((data) => {
-      let ingredientsHtml = '';
-      for (i = 1; i <= 20; i++) {
-        const ingredientKey = `strIngredient${i}`;
-        const measureKey = `strMeasure${i}`;
-        if (data.meals[0][ingredientKey] !== '') {
-          ingredientsHtml += `
+  getSingleRecipe(id).then((data) => {
+    let ingredientsHtml = '';
+
+    for (i = 1; i <= 20; i++) {
+      const ingredientKey = `strIngredient${i}`;
+      const measureKey = `strMeasure${i}`;
+
+      if (data[ingredientKey] !== '' && data[ingredientKey] !== null) {
+        ingredientsHtml += `
             <div class="receipt-ingrident-row">
             <div class="ingredient-and-checkbox">
-              <input id="${data.meals[0].idMeal}${i}" type="checkbox">
+              <input id="${data.idMeal}${i}" type="checkbox">
               <div class="custom-checkbox"></div>
-              <label for="${data.meals[0].idMeal}${i}" class="receipt-ingrident-name">${data.meals[0][ingredientKey]}</label>
+              <label for="${data.idMeal}${i}" class="receipt-ingrident-name">${data[ingredientKey]}</label>
               </div>
-            <div class="receipt-ingrident-amount">${data.meals[0][measureKey]}</div>
+            <div class="receipt-ingrident-amount">${data[measureKey]}</div>
             </div>
           `;
-        }
       }
+    }
 
-      let html = `
+    let finalHtml = `
           <div class="full-recipe-content-container">
-            <div class="recipe-title">${data.meals[0].strMeal}</div>
-            <div class="full-recipe category">${data.meals[0].strCategory}</div>
-            <div class="full-recipe area">${data.meals[0].strArea}</div>
+            <div class="recipe-title">${data.strMeal}</div>
+            <div class="full-recipe category">${data.strCategory}</div>
+            <div class="full-recipe area">${data.strArea}</div>
             <img
-              src="${data.meals[0].strMealThumb}"
+              src="${data.strMealThumb}"
               class="full-recipe-image"
               alt=""
             />
             <div class="instructions-header">Instructions</div>
-            <div class="full-recipe-instructions">${data.meals[0].strInstructions}</div>
+            <div class="full-recipe-instructions">${data.strInstructions}</div>
           </div>
           <div class="receipe-ingridents-container">
             <div class="ingredient-header">Ingredients</div>
@@ -182,8 +249,8 @@ function renderFullRecipe(e) {
           </div>
           `;
 
-      fullRecipeSection.innerHTML = html;
-    });
+    fullRecipeSection.innerHTML = finalHtml;
+  });
 }
 
 // {/* <div class="serve-amount-container">
@@ -193,62 +260,32 @@ function renderFullRecipe(e) {
 // <button class="serve-btn add">+</button>
 // </div> */}
 
-async function getListByIngredient(ingredient) {
-  const request = await fetch(
-    `https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient}`
-  );
-  const data = await request.json();
-  return data;
-}
+async function renderSuggestion() {
+  const filteredList = await getFilteredListOfId(previousSearch)
 
-async function getListByName(name) {
-  const request = await fetch(
-    `https://www.themealdb.com/api/json/v1/1/search.php?s=${name}`
-  );
-  const data = await request.json();
-  return data;
-}
-
-async function getFullDetails(id) {
-  const request = await fetch(
-    `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`
-  );
-  const data = await request.json();
-  return data;
-}
-
-function renderSuggestion() {
-  getListByIngredient(previousSearch).then((data) => {
-    if (data.meals) {
-      const newList = data.meals.splice(0, 4);
-      newList.forEach((meal) => {
-        const id = meal.idMeal;
-
-        getFullDetails(id).then((fullRecipe) => {
-          const html = `
-              <div class="suggested-recipe-container" data-id = "${fullRecipe.meals[0].idMeal}">
-                <img
-                  class="recipe-img"
-                  src="${fullRecipe.meals[0].strMealThumb}"
-                  alt=""
-                />
-                <div class="recipe-name">${fullRecipe.meals[0].strMeal}</div>
-                <div class="recipe-instructions">${fullRecipe.meals[0].strInstructions}</div>
-                <div class="divider"></div>
-                <div class="recipe-tags">
-                  <div class="suggest-recipe category">#${fullRecipe.meals[0].strCategory}</div>
-                  <div class="suggest-recipe area">#${fullRecipe.meals[0].strArea}</div>
-                </div>
-              </div>
-              `;
-
-          const newHtml = suggestionContainer.innerHTML + html;
-          suggestionContainer.innerHTML = newHtml;
-        });
-      });
-    } else {
-      newHtml = 'Sorry';
-      suggestionContainer.innerHTML = newHtml;
-    }
+  let htmlArray = await getAllRecipes(filteredList).then((recipes) => {
+    return recipes.map((recipe) => {
+      return `
+      <div class="suggested-recipe-container" data-id = "${recipe.idMeal}">
+        <img
+          class="recipe-img"
+          src="${recipe.strMealThumb}"
+          alt=""
+        />
+        <div class="recipe-name">${recipe.strMeal}</div>
+        <div class="recipe-instructions">${recipe.strInstructions}</div>
+        <div class="divider"></div>
+        <div class="recipe-tags">
+          <div class="suggest-recipe category">#${recipe.strCategory}</div>
+          <div class="suggest-recipe area">#${recipe.strArea}</div>
+        </div>
+      </div>
+      `;
+    });
   });
+  const html = htmlArray.join('');
+  suggestionContainer.innerHTML = html;
 }
+
+
+Promise.all()
