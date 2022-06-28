@@ -8,6 +8,7 @@
       href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;700&display=swap"
       rel="stylesheet"
     />
+    <script src="https://kit.fontawesome.com/e871ab8982.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body>
@@ -17,14 +18,14 @@
         <input
           type="text"
           class="search-input"
-          placeholder="Search with ingredient"
-          data-header-search-input
+          placeholder="Search with keyword or ingredient"
         />
         <button class="search-btn" data-search-btn>
           <img src="images/search-icon.png" alt="search-icon" />
         </button>
       </form>
       <button class="subscribe">social media icon</button>
+      <i class="fa-solid fa-user"></i>
     </header>
     <div class="homepage-img-section show" data-homepage-image-section>
       <div class="home-page-img-content">
@@ -33,8 +34,7 @@
           <input
             type="text"
             class="homepage search-input"
-            placeholder="Search with ingredient"
-            data-homepage-search-input
+            placeholder="Search with keyword or ingredient"
           />
           <button class="homepage search-btn" data-search-btn>
             <img src="images/search-icon.png" alt="search-icon" />
@@ -42,82 +42,18 @@
         </form>
       </div>
     </div>
-    <main class="main">
+    <main class="main" data-main>
       <div class="landing-page show" data-landing-page-section>
         <div class="categories-section">
           <div class="categories-section-title">Categories</div>
-          <div class="categories-container">
-            <div class="category-block">
-              <img
-                class="category-icon"
-                src="images/breakfast.png"
-                alt="breakfast"
-              />
-              <div class="category-name">Breakfast</div>
-            </div>
-            <div class="category-block">
-              <img
-                class="category-icon"
-                src="images/breakfast.png"
-                alt="starter"
-              />
-              <div class="category-name">Starter</div>
-            </div>
-            <div class="category-block">
-              <img
-                class="category-icon"
-                src="images/breakfast.png"
-                alt="beef"
-              />
-              <div class="category-name">Beef</div>
-            </div>
-            <div class="category-block">
-              <img
-                class="category-icon"
-                src="images/breakfast.png"
-                alt="chicken"
-              />
-              <div class="category-name">Chicken</div>
-            </div>
-            <div class="category-block">
-              <img
-                class="category-icon"
-                src="images/breakfast.png"
-                alt="pork"
-              />
-              <div class="category-name">Pork</div>
-            </div>
-            <div class="category-block">
-              <img
-                class="category-icon"
-                src="images/breakfast.png"
-                alt="seafood"
-              />
-              <div class="category-name">Seafood</div>
-            </div>
-            <div class="category-block">
-              <img
-                class="category-icon"
-                src="images/breakfast.png"
-                alt="dessert"
-              />
-              <div class="category-name">Dessert</div>
-            </div>
-            <div class="category-block">
-              <img
-                class="category-icon"
-                src="images/breakfast.png"
-                alt="Vegetarian"
-              />
-              <div class="category-name">Vegetarian</div>
-            </div>
+          <div class="categories-container" data-categories-container>
           </div>
         </div>
 
         <div class="suggestion-section">
           <div class="suggested-recipe-title">Suggested Recipes for you</div>
           <div class="suggested-reason">
-            Because you searched for <span>Dessert</span>
+            Because you searched for <span class="previous-search" data-previous-search></span>
           </div>
           <div
             class="suggested-recipes-container"
@@ -127,7 +63,7 @@
       </div>
       <div class="search-section" data-search-results-section>
         <div class="search-section-header">
-          <div class="search-section-title">Search Results</div>
+          <div class="search-section-title" data-search-result-title>Search Results</div>
           <div class="search-results-num" data-recipes-found>12 recipes found</div>
         </div>
         <div class="search-section-body" data-search-results-container>

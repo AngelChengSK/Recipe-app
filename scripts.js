@@ -1,18 +1,27 @@
 const appTitle = document.querySelector('[data-app-title]');
+const main = document.querySelector('[data-main]');
 const homepageImageSection = document.querySelector(
   '[data-homepage-image-section]'
 );
 const landingPageSection = document.querySelector(
   '[data-landing-page-section]'
 );
+const categoriesContainer = document.querySelector(
+  '[data-categories-container]'
+);
+const previousSearchPhase = document.querySelector('[data-previous-search]');
 const suggestionContainer = document.querySelector(
   '[data-suggested-recipes-container]'
 );
-const searchBtn = document.querySelector('[data-search-btn]');
-const searchInputHeader = document.querySelector('[data-header-search-input]');
+
+const suggestedRecipeBottom = document.querySelector(
+  '[data-suggested-recipe-bottom]'
+);
+const searchBtns = document.querySelectorAll('[data-search-btn]');
 const searchResultsSection = document.querySelector(
   '[data-search-results-section]'
 );
+const searchResultTitle = document.querySelector('[data-search-result-title]');
 const searchResultContainer = document.querySelector(
   '[data-search-results-container]'
 );
@@ -21,29 +30,128 @@ const fullRecipeSection = document.querySelector(
   '[data-full-recipe-container]'
 );
 
-let previousSearch = 'chicken';
-const currentPage = 'homepage';
+const LOCALSTORAGE_PREVIOUSE_SEARCH_KEY = 'recipeApp-previousSearch';
+const LOCALSTORAGE_FAVOURITE_LIST_KEY = 'recipeApp-favouriteList';
+
+let previousSearch = localStorage.getItem(LOCALSTORAGE_PREVIOUSE_SEARCH_KEY);
+let favouriteList = localStorage.getItem(LOCALSTORAGE_FAVOURITE_LIST_KEY) || [];
+
+const categories = [
+  {
+    name: 'Beef',
+    image: 'images/beef.png'
+  },
+  {
+    name: 'Chicken',
+    image: 'images/chicken.png'
+  },
+  {
+    name: 'Lamb',
+    image: 'images/lamb.png'
+  },
+  {
+    name: 'Pork',
+    image: 'images/pork.png'
+  },
+  {
+    name: 'Seafood',
+    image: 'images/seafood.png'
+  },
+  {
+    name: 'Vegan',
+    image: 'images/vegan.png'
+  },
+  {
+    name: 'Breakfast',
+    image: 'images/breakfast.png'
+  },
+  {
+    name: 'Side',
+    image: 'images/side.png'
+  },
+  {
+    name: 'Dessert',
+    image: 'images/dessert.png'
+  }
+];
 
 window.addEventListener('DOMContentLoaded', () => {
+  if (previousSearch) {
+    previousSearchPhase.innerText = previousSearch;
+  } else {
+    previousSearchPhase.innerText = 'nothing';
+    previousSearch = 'rice';
+  }
+
   renderSuggestion();
+  renderCategoryList();
+});
+
+main.addEventListener('click', (e) => {
+  if (e.target.hasAttribute('data-arrow')) {
+    renderFullRecipe(e.target.dataset.arrow);
+  }
 });
 
 appTitle.addEventListener('click', () => {
   toggleSection(homepageImageSection, landingPageSection);
+  renderSuggestion();
 });
 
-searchBtn.addEventListener('click', (e) => {
-  e.preventDefault();
-  if (searchInputHeader.value === null || searchInputHeader.value === '')
+searchBtns.forEach((btn) => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const input = btn.previousElementSibling;
+    if (input.value === null || input.value === '') return;
+    toggleSection(searchResultsSection);
+    renderSearchResult(input.value);
+    input.value = '';
+  });
+});
+
+categoriesContainer.addEventListener('click', (e) => {
+  if (e.target.hasAttribute('data-category')) {
+    toggleSection(searchResultsSection);
+    renderSearchResult(e.target.dataset.category);
+    previousSearch = e.target.dataset.category;
+  }
+});
+
+suggestionContainer.addEventListener('click', (e) => {
+  //if click on the child elements, i.e. image/text, and is not the bottom part
+  if (
+    e.target.parentElement.hasAttribute('data-id') &&
+    !e.target.hasAttribute('data-suggested-recipe-bottom')
+  ) {
+    renderFullRecipe(e.target.parentElement.dataset.id);
+    toggleSection(fullRecipeSection);
     return;
-  toggleSection(searchResultsSection);
-  renderSearchResult(searchInputHeader.value);
+  }
+
+  //if click on the recipe itself, i.e. the blank areas with no child elements placed on top
+  if (e.target.hasAttribute('data-id')) {
+    renderFullRecipe(e.target.dataset.id);
+    toggleSection(fullRecipeSection);
+    return;
+  }
+
+  //if click on the orange hashtags
+  if (e.target.hasAttribute('data-hashtag')) {
+    renderSearchResult(e.target.dataset.hashtag);
+    toggleSection(searchResultsSection);
+  }
 });
 
 searchResultContainer.addEventListener('click', (e) => {
-  if (e.target.parentElement.hasAttribute('data-id')) {
+  if (e.target.hasAttribute('data-id')) {
     toggleSection(fullRecipeSection);
-    renderFullRecipe(e);
+    renderFullRecipe(e.target.dataset.id);
+    return;
+  }
+  if (e.target.hasAttribute('data-hashtag')) {
+    renderSearchResult(e.target.dataset.hashtag);
+    toggleSection(searchResultsSection);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 });
 
@@ -144,6 +252,8 @@ async function getFilteredListOfId(input) {
 }
 
 async function renderSearchResult(input) {
+  searchResultTitle.innerText = `Search Result(s) for "${input}"`;
+
   const filteredList = await getFilteredListOfId(input);
   if (!filteredList) {
     searchResultContainer.innerHTML = '<div>Sorry</div>';
@@ -157,7 +267,7 @@ async function renderSearchResult(input) {
   let htmlArray = await getAllRecipes(filteredList).then((recipes) => {
     return recipes.map((recipe) => {
       return `
-      <div class="preview result-container" data-id="${recipe.idMeal}">
+      <div class="preview result-container" >
         <div class="recipe-owner-details-container">
           <img class="preview owner-img" src="images/user-profile.png">
           <div class="owner-details-text">
@@ -175,10 +285,10 @@ async function renderSearchResult(input) {
           <div class="preview recipe-instructions">${recipe.strInstructions}</div>
           <div class="preview recipe-bottom">
             <div class="preveiw recipe-tags">
-              <div class="preview recipe-category">#${recipe.strCategory}</div>
-              <div class="preview recipe-area">#${recipe.strArea}</div>
+              <div class="preview recipe-category" data-hashtag="${recipe.strCategory}">#${recipe.strCategory}</div>
+              <div class="preview recipe-area" data-hashtag="${recipe.strArea}">#${recipe.strArea}</div>
             </div>
-            <button class="view-recipe-btn">VIEW RECIPE</button>
+            <button class="view-recipe-btn" data-id="${recipe.idMeal}">VIEW RECIPE</button>
           </div>
         </div>
       </div>
@@ -189,11 +299,12 @@ async function renderSearchResult(input) {
   searchResultContainer.innerHTML = html;
   recipesFound.innerText = `${filteredList.length} recipe(s) found`;
   previousSearch = input;
+  previousSearchPhase.innerText = previousSearch;
+  savePreviousSearch();
 }
 
-function renderFullRecipe(e) {
+function renderFullRecipe(id) {
   // e.preventDefault();
-  const id = e.target.parentElement.dataset.id;
   getSingleRecipe(id).then((data) => {
     let ingredientsHtml = '';
 
@@ -216,17 +327,25 @@ function renderFullRecipe(e) {
     }
 
     let finalHtml = `
+      <i class="fa-solid fa-angle-left" data-arrow="${data.idMeal - 1}"></i>
       <div class="full-recipe-image-container">
         <img
         src="${data.strMealThumb}"
         class="full-recipe-image"
         alt=""
         />
-        <div class="full-recipe-header">
+        <div class="full-recipe-header">      
           <div class="full-recipe-title">${data.strMeal}</div>
           <div class="full-recipe-tags">
             <div class="full-recipe category">${data.strCategory}</div>
             <div class="full-recipe area">${data.strArea}</div>
+          </div>
+          <div class="full-recipe-owner-details-container">
+            <img class="full-recipe owner-img" src="images/user-profile.png">
+            <div class="owner-details-text">
+              <div class="full-recipe-owner-name">Profile Name</div>
+              <div class="full-recipe-share-time">2h ago</div>
+            </div>
           </div>
         </div>
       </div>
@@ -234,7 +353,7 @@ function renderFullRecipe(e) {
         <div class="full-recipe-body">
           <div class="receipe-ingridents-section">
             <div class="ingredient-header">Ingredients</div>
-            <div class=receipt-ingridents-details-container>${ingredientsHtml}</div>
+            <div class="receipt-ingridents-details-container">${ingredientsHtml}</div>
           </div>
           <div class="full-recipe-instructions-section">
             <div class="instructions-header">Instructions</div>
@@ -242,8 +361,11 @@ function renderFullRecipe(e) {
           </div>
         </div>
       </div>
+      <i class="fa-solid fa-angle-right" data-arrow="${
+        Number(data.idMeal) + 1
+      }"></i>
       `;
-    
+
     fullRecipeSection.innerHTML = finalHtml;
   });
 }
@@ -270,9 +392,10 @@ async function renderSuggestion() {
         <div class="suggestion recipe-name">${recipe.strMeal}</div>
         <div class="suggestion recipe-instructions">${recipe.strInstructions}</div>
         <div class="divider"></div>
-        <div class="suggestion recipe-tags">
-          <div class="suggestion recipe-category">#${recipe.strCategory}</div>
-          <div class="suggestion recipe-area">#${recipe.strArea}</div>
+        <div class="suggestion-bottom" data-suggested-recipe-bottom>
+          <div class="suggestion recipe-category" data-hashtag="${recipe.strCategory}">#${recipe.strCategory}</div>
+          <div class="suggestion recipe-area" data-hashtag="${recipe.strArea}">#${recipe.strArea}</div>
+          <img class="suggestion owner-img" src="images/user-profile.png">
         </div>
       </div>
       `;
@@ -280,6 +403,31 @@ async function renderSuggestion() {
   });
   const html = htmlArray.join('');
   suggestionContainer.innerHTML = html;
+}
+
+function renderCategoryList() {
+  let html = '';
+  categories.forEach((category) => {
+    html += `
+    <div class="category-block" data-category="${category.name.toLowerCase()}">
+      <img
+        class="category-icon"
+        src="${category.image}"
+        alt="${category.name}"
+      />
+      <div class="category-name">${category.name}</div>
+    </div>
+  `;
+  });
+  categoriesContainer.innerHTML = html;
+}
+
+function savePreviousSearch() {
+  localStorage.setItem(LOCALSTORAGE_PREVIOUSE_SEARCH_KEY, previousSearch);
+}
+
+function saveFavouriteList() {
+  localStorage.setItem(LOCALSTORAGE_FAVOURITE_LIST_KEY, favouriteList);
 }
 
 // below function is not in use, just for reference as I wrote notes along the code
