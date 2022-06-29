@@ -8,24 +8,38 @@
       href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;700&display=swap"
       rel="stylesheet"
     />
-    <script src="https://kit.fontawesome.com/e871ab8982.js" crossorigin="anonymous"></script>
+    <script
+      src="https://kit.fontawesome.com/e871ab8982.js"
+      crossorigin="anonymous"
+    ></script>
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body>
-    <header class="header">
+    <header class="header-container">
       <div class="app-title" data-app-title>Discover Recipes</div>
-      <form class="search-bar-container">
+      <form class="header search-bar-container" data-header-search-bar>
         <input
           type="text"
-          class="search-input"
-          placeholder="Search with keyword or ingredient"
+          class="header search-input"
+          placeholder="Search recipe with keyword or ingredient"
         />
         <button class="search-btn" data-search-btn>
           <img src="images/search-icon.png" alt="search-icon" />
         </button>
       </form>
-      <button class="subscribe">social media icon</button>
-      <i class="fa-solid fa-user"></i>
+      <div class="social-media-icons">
+        <i class="fa-brands fa-instagram"></i>
+        <i class="fa-brands fa-facebook"></i>
+        <i class="fa-brands fa-twitter"></i>
+        <i class="fa-brands fa-pinterest"></i>
+      </div>
+      <div class="vertical-divider"></div>
+      <div class="account">
+        <a href="#">Log in</a>
+        /
+        <a href="#">Sign up</a>
+      </div>
+      <button class="submit-recipe-btn">Submit a recipe</button>
     </header>
     <div class="homepage-img-section show" data-homepage-image-section>
       <div class="home-page-img-content">
@@ -40,20 +54,32 @@
             <img src="images/search-icon.png" alt="search-icon" />
           </button>
         </form>
+        <div class="try-keywords-container">
+          <span>Try&nbsp</span>
+          <ul class="try-keywords">
+            <li data-keyword="eggs">eggs</li>
+            ,
+            <li data-keyword="butter">&nbspbutter</li>
+            ,
+            <li data-keyword="salad">&nbspsalad</li>
+            , or
+            <li data-keyword="pasta">&nbsppasta</li>
+          </ul>
+        </div>
       </div>
     </div>
     <main class="main" data-main>
       <div class="landing-page show" data-landing-page-section>
         <div class="categories-section">
           <div class="categories-section-title">Categories</div>
-          <div class="categories-container" data-categories-container>
-          </div>
+          <div class="categories-container" data-categories-container></div>
         </div>
 
         <div class="suggestion-section">
           <div class="suggested-recipe-title">Suggested Recipes for you</div>
           <div class="suggested-reason">
-            Because you searched for <span class="previous-search" data-previous-search></span>
+            Because you searched for
+            <span class="previous-search" data-previous-search></span>
           </div>
           <div
             class="suggested-recipes-container"
@@ -63,17 +89,17 @@
       </div>
       <div class="search-section" data-search-results-section>
         <div class="search-section-header">
-          <div class="search-section-title" data-search-result-title>Search Results</div>
-          <div class="search-results-num" data-recipes-found>12 recipes found</div>
+          <div class="search-section-title" data-search-result-title>
+            Search Results
+          </div>
+          <div class="search-results-num" data-recipes-found>
+            12 recipes found
+          </div>
         </div>
-        <div class="search-section-body" data-search-results-container>
-         
-        </div>
+        <div class="search-section-body" data-search-results-container></div>
       </div>
-      <div class="full-recipe-section" data-full-recipe-container>
-      </div>
+      <div class="full-recipe-section" data-full-recipe-container></div>
     </main>
   </body>
   <script src="scripts.js"></script>
 </html>
-

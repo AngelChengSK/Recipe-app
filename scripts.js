@@ -3,6 +3,8 @@ const main = document.querySelector('[data-main]');
 const homepageImageSection = document.querySelector(
   '[data-homepage-image-section]'
 );
+const keywords = document.querySelectorAll('[data-keyword]')
+
 const landingPageSection = document.querySelector(
   '[data-landing-page-section]'
 );
@@ -90,8 +92,10 @@ window.addEventListener('DOMContentLoaded', () => {
 main.addEventListener('click', (e) => {
   if (e.target.hasAttribute('data-arrow')) {
     renderFullRecipe(e.target.dataset.arrow);
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 });
+
 
 appTitle.addEventListener('click', () => {
   toggleSection(homepageImageSection, landingPageSection);
@@ -108,6 +112,14 @@ searchBtns.forEach((btn) => {
     input.value = '';
   });
 });
+
+keywords.forEach(keyword => {
+  keyword.addEventListener('click', (e) => {
+    toggleSection(searchResultsSection);
+    renderSearchResult(e.target.dataset.keyword);
+    previousSearch = e.target.dataset.keyword;
+  })
+})
 
 categoriesContainer.addEventListener('click', (e) => {
   if (e.target.hasAttribute('data-category')) {
@@ -154,6 +166,14 @@ searchResultContainer.addEventListener('click', (e) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 });
+
+fullRecipeSection.addEventListener("click", (e) => {
+  if (e.target.hasAttribute('data-keyword')) {
+    toggleSection(searchResultsSection);
+    renderSearchResult(e.target.dataset.keyword);
+    previousSearch = e.target.dataset.keyword;
+  }
+})
 
 function toggleSection(...sectionToShow) {
   const sections = [
@@ -315,30 +335,30 @@ function renderFullRecipe(id) {
       if (data[ingredientKey] !== '' && data[ingredientKey] !== null) {
         ingredientsHtml += `
           <div class="receipt-ingrident-row">
-          <div class="ingredient-and-checkbox">
             <input id="${data.idMeal}${i}" type="checkbox">
-            <div class="custom-checkbox"></div>
-            <label for="${data.idMeal}${i}" class="receipt-ingrident-name">${data[ingredientKey]}</label>
-            </div>
-          <div class="receipt-ingrident-amount">${data[measureKey]}</div>
+            <label for="${data.idMeal}${i}" class="receipt-ingrident-name">
+              <div class="custom-checkbox"></div>
+              ${data[ingredientKey]}
+            </label>
+            <div class="receipt-ingrident-amount">${data[measureKey]}</div>
           </div>
         `;
       }
     }
 
     let finalHtml = `
-      <i class="fa-solid fa-angle-left" data-arrow="${data.idMeal - 1}"></i>
-      <div class="full-recipe-image-container">
-        <img
-        src="${data.strMealThumb}"
-        class="full-recipe-image"
-        alt=""
-        />
-        <div class="full-recipe-header">      
+      <div class="switch-btns">
+        <i class="fa-solid fa-angle-left" data-arrow="${data.idMeal - 1}"></i>
+        <i class="fa-solid fa-angle-right" data-arrow="${
+          Number(data.idMeal) + 1
+        }"></i>
+      </div>
+      <div class="full-recipe-header-section">
+        <div class="full-recipe-header">
           <div class="full-recipe-title">${data.strMeal}</div>
           <div class="full-recipe-tags">
-            <div class="full-recipe category">${data.strCategory}</div>
-            <div class="full-recipe area">${data.strArea}</div>
+            <div class="full-recipe category" data-keyword=${data.strCategory}>${data.strCategory}</div>
+            <div class="full-recipe area" data-keyword="${data.strArea}">${data.strArea}</div>
           </div>
           <div class="full-recipe-owner-details-container">
             <img class="full-recipe owner-img" src="images/user-profile.png">
@@ -348,6 +368,11 @@ function renderFullRecipe(id) {
             </div>
           </div>
         </div>
+        <img
+          src="${data.strMealThumb}"
+          class="full-recipe-image"
+          alt=""
+        />
       </div>
       <div class="full-recipe-text-container">
         <div class="full-recipe-body">
@@ -361,9 +386,6 @@ function renderFullRecipe(id) {
           </div>
         </div>
       </div>
-      <i class="fa-solid fa-angle-right" data-arrow="${
-        Number(data.idMeal) + 1
-      }"></i>
       `;
 
     fullRecipeSection.innerHTML = finalHtml;
