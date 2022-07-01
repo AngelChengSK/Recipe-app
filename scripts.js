@@ -3,19 +3,19 @@ const main = document.querySelector('[data-main]');
 const homepageImageSection = document.querySelector(
   '[data-homepage-image-section]'
 );
-const keywords = document.querySelectorAll('[data-keyword]')
+const keywords = document.querySelectorAll('[data-keyword]');
 
 const landingPageSection = document.querySelector(
   '[data-landing-page-section]'
 );
-const categoriesContainer = document.querySelector(
+const categoriesContainer = document.querySelectorAll(
   '[data-categories-container]'
 );
 const previousSearchPhase = document.querySelector('[data-previous-search]');
 const suggestionContainer = document.querySelector(
   '[data-suggested-recipes-container]'
 );
-
+const suggestionRefreshBtn = document.querySelector('[data-suggestion-refresh-btn]')
 const suggestedRecipeBottom = document.querySelector(
   '[data-suggested-recipe-bottom]'
 );
@@ -24,6 +24,9 @@ const searchResultsSection = document.querySelector(
   '[data-search-results-section]'
 );
 const searchResultTitle = document.querySelector('[data-search-result-title]');
+const searchNoResult = document.querySelector(
+  '[data-search-no-result]'
+);
 const searchResultContainer = document.querySelector(
   '[data-search-results-container]'
 );
@@ -60,7 +63,7 @@ const categories = [
     image: 'images/seafood.png'
   },
   {
-    name: 'Vegan',
+    name: 'Vegetarian',
     image: 'images/vegan.png'
   },
   {
@@ -92,10 +95,14 @@ window.addEventListener('DOMContentLoaded', () => {
 main.addEventListener('click', (e) => {
   if (e.target.hasAttribute('data-arrow')) {
     renderFullRecipe(e.target.dataset.arrow);
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  if (e.target.parentElement.hasAttribute('data-return-btn')) {
+    toggleSection(searchResultsSection, searchResultContainer)
+    renderSearchResult(previousSearch)
   }
 });
-
 
 appTitle.addEventListener('click', () => {
   toggleSection(homepageImageSection, landingPageSection);
@@ -113,20 +120,22 @@ searchBtns.forEach((btn) => {
   });
 });
 
-keywords.forEach(keyword => {
+keywords.forEach((keyword) => {
   keyword.addEventListener('click', (e) => {
     toggleSection(searchResultsSection);
     renderSearchResult(e.target.dataset.keyword);
     previousSearch = e.target.dataset.keyword;
-  })
-})
+  });
+});
 
-categoriesContainer.addEventListener('click', (e) => {
-  if (e.target.hasAttribute('data-category')) {
-    toggleSection(searchResultsSection);
-    renderSearchResult(e.target.dataset.category);
-    previousSearch = e.target.dataset.category;
-  }
+categoriesContainer.forEach((container) => {
+  container.addEventListener('click', (e) => {
+    if (e.target.hasAttribute('data-category')) {
+      toggleSection(searchResultsSection);
+      renderSearchResult(e.target.dataset.category);
+      previousSearch = e.target.dataset.category;
+    }
+  });
 });
 
 suggestionContainer.addEventListener('click', (e) => {
@@ -154,6 +163,8 @@ suggestionContainer.addEventListener('click', (e) => {
   }
 });
 
+suggestionRefreshBtn.addEventListener('click', renderSuggestion)
+
 searchResultContainer.addEventListener('click', (e) => {
   if (e.target.hasAttribute('data-id')) {
     toggleSection(fullRecipeSection);
@@ -167,19 +178,21 @@ searchResultContainer.addEventListener('click', (e) => {
   }
 });
 
-fullRecipeSection.addEventListener("click", (e) => {
+fullRecipeSection.addEventListener('click', (e) => {
   if (e.target.hasAttribute('data-keyword')) {
     toggleSection(searchResultsSection);
     renderSearchResult(e.target.dataset.keyword);
     previousSearch = e.target.dataset.keyword;
   }
-})
+});
 
 function toggleSection(...sectionToShow) {
   const sections = [
     homepageImageSection,
     landingPageSection,
     searchResultsSection,
+    searchNoResult,
+    searchResultContainer,
     fullRecipeSection
   ];
 
@@ -276,8 +289,8 @@ async function renderSearchResult(input) {
 
   const filteredList = await getFilteredListOfId(input);
   if (!filteredList) {
-    searchResultContainer.innerHTML = '<div>Sorry</div>';
-    recipesFound.innerText = `No recipe found`;
+    recipesFound.innerText = `Sorry, no recipes found`;
+    toggleSection(searchResultsSection,searchNoResult)
     return;
   }
 
@@ -317,6 +330,7 @@ async function renderSearchResult(input) {
   });
   const html = htmlArray.join('');
   searchResultContainer.innerHTML = html;
+  toggleSection(searchResultsSection,searchResultContainer)
   recipesFound.innerText = `${filteredList.length} recipe(s) found`;
   previousSearch = input;
   previousSearchPhase.innerText = previousSearch;
@@ -347,6 +361,10 @@ function renderFullRecipe(id) {
     }
 
     let finalHtml = `
+      <div class="return-btn" data-return-btn>
+        <i class="fa-solid fa-arrow-left"></i>
+        <div>&nbspBack</div>
+      </div>
       <div class="switch-btns">
         <i class="fa-solid fa-angle-left" data-arrow="${data.idMeal - 1}"></i>
         <i class="fa-solid fa-angle-right" data-arrow="${
@@ -357,8 +375,12 @@ function renderFullRecipe(id) {
         <div class="full-recipe-header">
           <div class="full-recipe-title">${data.strMeal}</div>
           <div class="full-recipe-tags">
-            <div class="full-recipe category" data-keyword=${data.strCategory}>${data.strCategory}</div>
-            <div class="full-recipe area" data-keyword="${data.strArea}">${data.strArea}</div>
+            <div class="full-recipe category" data-keyword=${
+              data.strCategory
+            }>${data.strCategory}</div>
+            <div class="full-recipe area" data-keyword="${data.strArea}">${
+      data.strArea
+    }</div>
           </div>
           <div class="full-recipe-owner-details-container">
             <img class="full-recipe owner-img" src="images/user-profile.png">
@@ -392,15 +414,9 @@ function renderFullRecipe(id) {
   });
 }
 
-// {/* <div class="serve-amount-container">
-// <span class="serve-amount">Serves</span>
-// <button class="serve-btn minus">-</button>
-// <span> 1 </span>
-// <button class="serve-btn add">+</button>
-// </div> */}
-
 async function renderSuggestion() {
-  const filteredList = await getFilteredListOfId(previousSearch);
+  const filteredFullList = await getFilteredListOfId(previousSearch);
+  const filteredList = randomSelection(filteredFullList, 4)
 
   let htmlArray = await getAllRecipes(filteredList).then((recipes) => {
     return recipes.map((recipe) => {
@@ -441,7 +457,9 @@ function renderCategoryList() {
     </div>
   `;
   });
-  categoriesContainer.innerHTML = html;
+  categoriesContainer.forEach((container) => {
+    container.innerHTML = html;
+  });
 }
 
 function savePreviousSearch() {
@@ -450,6 +468,21 @@ function savePreviousSearch() {
 
 function saveFavouriteList() {
   localStorage.setItem(LOCALSTORAGE_FAVOURITE_LIST_KEY, favouriteList);
+}
+
+function randomSelection(originalArray, n) {
+  let newArr = [];
+  if (n >= originalArray.length) {
+    return originalArray;
+  }
+  for (let i = 0; i < n; i++) {
+    let newElem = originalArray[Math.floor(Math.random() * originalArray.length)];
+    while (newArr.includes(newElem)) {
+      newElem = originalArray[Math.floor(Math.random() * originalArray.length)];
+    }
+    newArr.push(newElem);
+  }
+  return newArr;
 }
 
 // below function is not in use, just for reference as I wrote notes along the code

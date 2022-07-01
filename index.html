@@ -21,7 +21,7 @@
         <input
           type="text"
           class="header search-input"
-          placeholder="Search recipe with keyword or ingredient"
+          placeholder="Search recipes with keyword or ingredient"
         />
         <button class="search-btn" data-search-btn>
           <img src="images/search-icon.png" alt="search-icon" />
@@ -39,7 +39,7 @@
         /
         <a href="#">Sign up</a>
       </div>
-      <button class="submit-recipe-btn">Submit a recipe</button>
+      <button class="share-recipe-btn">Share a recipe</button>
     </header>
     <div class="homepage-img-section show" data-homepage-image-section>
       <div class="home-page-img-content">
@@ -74,13 +74,13 @@
           <div class="categories-section-title">Categories</div>
           <div class="categories-container" data-categories-container></div>
         </div>
-
         <div class="suggestion-section">
           <div class="suggested-recipe-title">Suggested Recipes for you</div>
           <div class="suggested-reason">
             Because you searched for
             <span class="previous-search" data-previous-search></span>
           </div>
+          <i class="fa-solid fa-arrows-rotate" data-suggestion-refresh-btn></i>
           <div
             class="suggested-recipes-container"
             data-suggested-recipes-container
@@ -96,10 +96,23 @@
             12 recipes found
           </div>
         </div>
+        <div class="search-section-no-result" data-search-no-result>
+          <ul class="search-suggestions">
+            Search Suggestions:
+            <li>Check your spelling</li>
+            <li>Try more general words</li>
+            <li>Or, maybe we can help...</li>
+          </ul>
+          <div
+            class="search-section categories-container"
+            data-categories-container
+          ></div>
+        </div>
         <div class="search-section-body" data-search-results-container></div>
       </div>
       <div class="full-recipe-section" data-full-recipe-container></div>
     </main>
+    <footer>Angel Cheng ©️ Jun 2022</footer>
   </body>
   <script src="scripts.js"></script>
 </html>
