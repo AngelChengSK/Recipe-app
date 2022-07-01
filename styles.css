@@ -64,7 +64,7 @@ body {
   display: none;
   max-width: 1100px;
   width: 90%;
-  margin: 25px auto;
+  margin: 25px auto 50px;
 }
 
 .landing-page.show {
@@ -607,7 +607,7 @@ footer {
 .search-suggestions > li {
   font-size: 17px;
   font-weight: 300;
-  margin-left: 15px;
+  margin-left: 20px;
 }
 
 .search-section.categories-container {
